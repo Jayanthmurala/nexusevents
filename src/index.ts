@@ -14,8 +14,10 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
-  origin: "*",
+  origin: ["http://localhost:3000", "http://127.0.0.1:3000", "https://nexus-frontend-pi-ten.vercel.app"],
   credentials: true,
+  allowedHeaders: ["Authorization", "Content-Type"],
+  exposedHeaders: ["Content-Disposition"],
 });
 
 app.register(swagger, {
