@@ -14,7 +14,7 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
-  origin: true,
+  origin: "*",
   credentials: true,
 });
 
