@@ -1,6 +1,6 @@
 import axios from "axios";
-import { env } from "../config/env";
-import cache from "../utils/cache";
+import { env } from "../config/env.js";
+import cache from "../utils/cache.js";
 
 interface AuthUser {
   id: string;

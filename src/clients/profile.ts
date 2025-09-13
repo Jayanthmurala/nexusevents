@@ -1,5 +1,5 @@
-import { env } from "../config/env";
-import type { AccessTokenPayload } from "../utils/jwt";
+import { env } from "../config/env.js";
+import type { AccessTokenPayload } from "../utils/jwt.js";
 
 // Simple in-memory cache for user scope
 const SCOPE_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -22,12 +22,32 @@ export async function getUserScope(req: any, payload: AccessTokenPayload): Promi
   }
   const data = await res.json();
   const profile = data?.profile as { collegeId?: string; department?: string; avatar?: string } | null;
-  if (!profile?.collegeId || !profile?.department) {
-    throw new Error("Profile is missing collegeId or department");
+  
+  if (!profile) {
+    throw new Error("Profile not found in response");
   }
+  
+  // Handle cases where collegeId or department might be empty strings or null
+  const collegeId = profile.collegeId?.trim();
+  const department = profile.department?.trim();
+  
+  if (!collegeId) {
+    console.warn(`Profile missing collegeId: ${collegeId}`);
+    console.warn('Full profile data:', JSON.stringify(profile, null, 2));
+    throw new Error(`Profile is missing collegeId (${collegeId})`);
+  }
+  
+  // Use fallback department if not provided
+  const finalDepartment = department || 'General';
+  console.log(`Using department: ${finalDepartment} (original: ${department})`);
+  
+  if (!department) {
+    console.warn(`Profile missing department, using fallback: ${finalDepartment}`);
+  }
+  
   const scope = {
-    collegeId: profile.collegeId,
-    department: profile.department,
+    collegeId: collegeId,
+    department: finalDepartment,
     avatar: profile.avatar,
     displayName: payload.name ?? (payload as any).displayName,
   };

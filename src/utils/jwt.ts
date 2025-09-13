@@ -1,5 +1,5 @@
 import { createRemoteJWKSet, jwtVerify, JWTPayload } from "jose";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 const JWKS = createRemoteJWKSet(new URL(env.AUTH_JWKS_URL));
 

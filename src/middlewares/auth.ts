@@ -1,4 +1,4 @@
-import { verifyAccessToken, AccessTokenPayload } from "../utils/jwt";
+import { verifyAccessToken, AccessTokenPayload } from "../utils/jwt.js";
 
 export async function requireAuth(req: any): Promise<AccessTokenPayload> {
   const auth = req.headers["authorization"] as string | undefined;

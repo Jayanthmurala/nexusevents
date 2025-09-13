@@ -1,6 +1,6 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server } from "http";
-import { verifyAccessToken } from "../utils/jwt";
+import { verifyAccessToken } from "../utils/jwt.js";
 
 export class SocketManager {
   private io: SocketIOServer;

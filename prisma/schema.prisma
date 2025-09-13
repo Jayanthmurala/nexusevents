@@ -135,3 +135,29 @@ model EventWaitlist {
   @@index([userId])
   @@map("event_waitlists")
 }
+
+// Admin audit log for tracking all administrative actions
+model AdminAuditLog {
+  id          String   @id @default(cuid())
+  adminId     String   // ID of the admin who performed the action
+  adminName   String   // Display name of the admin
+  action      String   // Action performed (e.g., MODERATE_EVENT_APPROVE, DELETE_EVENT)
+  entityType  String   // Type of entity (EVENT, EVENT_APPROVAL_FLOW, etc.)
+  entityId    String   // ID of the affected entity
+  oldValues   String?  // JSON string of old values (for updates)
+  newValues   String?  // JSON string of new values (for updates)
+  reason      String?  // Reason provided by admin
+  collegeId   String?  // College context for the action
+  ipAddress   String?  // IP address of the admin
+  userAgent   String?  // User agent of the admin
+  metadata    String?  // Additional metadata as JSON
+  timestamp   DateTime @default(now())
+  
+  @@index([adminId])
+  @@index([action])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([collegeId])
+  @@index([timestamp])
+  @@map("admin_audit_logs")
+}

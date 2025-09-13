@@ -1,11 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { prisma } from "../db";
-import { requireAuth, requireRole } from "../middlewares/auth";
-import { getUserScope, getProfileByUserId } from "../clients/profile";
-import { getUserIdentity } from "../clients/auth";
-import type { AccessTokenPayload } from "../utils/jwt";
-import { env } from "../config/env";
+import { prisma } from "../db.js";
+import { requireAuth, requireRole } from "../middlewares/auth.js";
+import { getUserScope, getProfileByUserId } from "../clients/profile.js";
+import { getUserIdentity } from "../clients/auth.js";
+import type { AccessTokenPayload } from "../utils/jwt.js";
+import { env } from "../config/env.js";
 import { Prisma } from "@prisma/client";
 
 const EventType = z.enum(["WORKSHOP", "SEMINAR", "HACKATHON", "MEETUP"]);
@@ -46,9 +46,20 @@ const listQuerySchema = z.object({
   status: ModerationStatus.optional(),
   from: z.string().datetime().optional(),
   to: z.string().datetime().optional(),
-  upcomingOnly: z.coerce.boolean().optional(),
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  upcomingOnly: z.union([z.boolean(), z.string()]).transform(val => {
+    if (typeof val === 'string') {
+      return val.toLowerCase() === 'true';
+    }
+    return val;
+  }).optional(),
+  page: z.union([z.number(), z.string()]).transform(val => {
+    const num = typeof val === 'string' ? parseInt(val, 10) : val;
+    return isNaN(num) ? 1 : Math.max(1, num);
+  }).default(1),
+  limit: z.union([z.number(), z.string()]).transform(val => {
+    const num = typeof val === 'string' ? parseInt(val, 10) : val;
+    return isNaN(num) ? 20 : Math.min(100, Math.max(1, num));
+  }).default(20),
 });
 
 function hasRole(payload: AccessTokenPayload, role: string) {
